@@ -71,7 +71,7 @@ git branch -m oldNme newName
 
 ## 远程仓库处理
 
-删除远程分支
+删除远程分支（注意主分区无法删除，如果需要删除的话要在github的setting里面切换主分支）
 
 ```bash
 git push --delete origin oldName
@@ -102,6 +102,8 @@ git pull origin main//因为黑命贵，所以master改main了。。。。这里
 ```bash
 git push origin main
 ```
+
+
 
 ## .gitignore文件
 
