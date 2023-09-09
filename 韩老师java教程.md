@@ -1520,7 +1520,7 @@ Java语言中，将程序中出现的不正常情况称为异常 。
 1. Error（错误）：Java虚拟机无法解决的严重问题
 
 2. Exception：其他因编程错误或偶然的外在因素导致的一般性问题，可以使用针对性的代码进行处理。Exception也分为两个大类
-   1. 运行时异常RuntimeException（运行时发生的异常）
+   1. 运行时异常RuntimeException（运行时发生的异常）有默认处理机制
    2. 编译时异常（编译时，编译器检查出的异常）
 
 ### 🚩异常体系图
@@ -1567,4 +1567,40 @@ try-finally可以配合使用，这种用法相当于没有捕获异常，因此
 1. 如果一个方法可能产生某种异常，但是并不能确定如何处理这种异常，则此方法应显示地声明抛出异常，表明该方法将不对这些异常进行处理，而由该方法的调用者负责处理
 2. 在方法声明中用throws语句可以声明抛出异常的列表，throws后面的异常类型可以是方法中产生的异常类型，也可以是它的父类
 
-   
+
+```java
+public static void f1(){
+	f2();//此处f2()在写代码时会报错，因为FileNotFoundException是编译时异常
+    //此处有两种选择，1.对f2()代码块进行try-catch。
+    //2.继续向上抛出FileNotFoundExecption异常
+}
+public static void f2() throws FileNotFoundException {}
+```
+
+```java
+public static void f3(){
+	f4();//此处在写代码时不会报错，因为ArithmeticException是运行时异常，不要求程序员显示处理，其有默认处理机制
+}
+public static void f4() throws ArithmeticException{} 
+```
+
+### 自定义异常
+
+#### 基本概念
+
+当程序中出现了某些“错误”，但该错误信息并没有在Throwable子类中描述处理，这是可以自己设计异常类，用于描述该错误信息。
+
+#### 步骤
+
+1. 定义类：自定义异常类名（程序员自己写）继承Exception或RuntimeException
+2. 如果继承Exception，属于编译异常
+3. 如果继承RuntimeException，属于运行异常
+
+#### 细节
+
+1. 自定义异常一般都是继承RuntimException
+2. 把自定义异常做成运行时异常，可以使用默认的处理机制
+
+<img src="http://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/img/image-20230909225418378.png" alt="image-20230909225418378" style="zoom:80%;" />
+
+<img src="http://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/img/image-20230909225459100.png" alt="image-20230909225459100" style="zoom:80%;" />

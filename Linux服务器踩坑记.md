@@ -28,6 +28,12 @@ DDNS服务选用的是园长给的教程，需要注意的是，DNS服务是有�
 
 ![image-20230909194642717](http://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/img/image-20230909194642717.png)
 
+### 未解之谜的解决
+
+园长发现，缺失的ram应该是分配给了gpu用作核显显存
+
+![image-20230909224149495](http://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/img/image-20230909224149495.png)
+
 ## 定时执行
 
 定时执行可以使用`crontab -e`，具体使用方法参考[菜鸟教程](https://www.runoob.com/linux/linux-comm-crontab.html)
