@@ -39,3 +39,28 @@ DDNS服务选用的是园长给的教程，需要注意的是，DNS服务是有�
 * */2 * * * /sbin/service httpd restart #每两个小时重启一次apache
 ```
 
+## 常用命令
+
+`ifconfig`查看当前机器网络状态，按网卡分类
+
+### iperf3是个好工具
+
+`iperf3 -s`当前机器作为服务端
+
+`iperf3 -c ipaddress` 当前机器作为客户端，对特定ip地址进行网速测试
+
+## 杂七杂八
+
+脚本文件必须要`chmod +x`将权限调整之后才能进行运行
+
+登陆的端口已经改成35791了，在ssh后面需要加`-p 35791`
+
+### 防火墙
+
+园长已经为系统设置防火墙，故刚才的iperf3的速度测试打不出来速度
+
+`ufw status` 查看开放的端口
+
+`ufw allow xxx` 打开端口xxx
+
+`ufw delete allow xxx` 关闭端口xxx
