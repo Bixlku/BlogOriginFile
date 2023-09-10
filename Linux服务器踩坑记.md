@@ -1,6 +1,6 @@
 ---
 title: Linux服务器踩坑记
-date: 2022-02-06 00:12:23
+date: 2023-09-10 10:45:00
 tags: 折腾
 ---
 
@@ -32,7 +32,7 @@ DDNS服务选用的是园长给的教程，需要注意的是，DNS服务是有�
 
 园长发现，缺失的ram应该是分配给了gpu用作核显显存
 
-![image-20230909224149495](http://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/img/image-20230909224149495.png)
+<img src="http://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/img/image-20230909224149495.png" alt="image-20230909224149495" style="zoom:80%;" />
 
 ## 定时执行
 
@@ -70,3 +70,31 @@ DDNS服务选用的是园长给的教程，需要注意的是，DNS服务是有�
 `ufw allow xxx` 打开端口xxx
 
 `ufw delete allow xxx` 关闭端口xxx
+
+## 猫猫
+
+想在linux养一只猫猫，养猫教程目前参考的这篇[养猫](https://blog.zzsqwq.cn/posts/how-to-use-clash-on-linux/)
+
+### 解压问题
+
+对`.gz`文件的解压，使用`gzip -d xxx.gz`，对`.tar`文件的解压，使用`tar -xf xxx.tar`，对`tar.gz`或`.tgz`文件的解压，使用`tar -xzf xxx.tgz/xxx.tar.gz`具体参见[菜鸟教程](https://www.runoob.com/w3cnote/linux-tar-gz.html)
+
+### 挂载U盘问题
+
+查看目前系统的挂载情况`fdisk -l`
+
+<img src="http://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/img/image-20230910105646867.png" alt="运行结果" style="zoom:80%;" />
+
+此处挂载的应该是分区，而不是设备id，即应当选择挂载/dev/sdb1而不是挂载/dev/sdb
+
+挂载命令：`mount /dev/sdb1 /dev/usb` 需要注意的是，若dev目录下没有usb文件夹，则需要先手动`mkdir /dev/usb`，再进行挂载
+
+取消挂载命令：`umount /dev/sdb1`
+
+### docker问题
+
+没啥好讲的，参考的这篇[docker教程](https://yeasy.gitbook.io/docker_practice/install/ubuntu)
+
+## Seafile部署
+
+养猫去了把这茬给忘了，下次再写
