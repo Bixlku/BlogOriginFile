@@ -98,3 +98,20 @@ DDNS服务选用的是园长给的教程，需要注意的是，DNS服务是有�
 ## Seafile部署
 
 养猫去了把这茬给忘了，下次再写
+
+使用docker部署Seafile服务器，参考的是官方文档[用Docker部署Seafile](https://cloud.seafile.com/published/seafile-manual-cn/docker/%E7%94%A8Docker%E9%83%A8%E7%BD%B2Seafile.md)，因此学习了一些Docker的基本命令。目前已经在服务器上部署了seafile服务，登陆账户和注册账户已经可以跑了，但是暂时还没搭建数据库，存不了东西
+
+### docker的相关命令
+
+可参考[菜鸟教程](https://www.runoob.com/docker/docker-container-usage.html)
+
+列出本地镜像 `docker images` 
+
+列出xxx的本地镜像 `docker images xxx` 
+
+启动已经停止运行的容器 `docker start ContainerID`
+
+停止一个容器 `docker stop ContainerID`
+
+删除一个容器 `docker rm -f ContainerID`
+
