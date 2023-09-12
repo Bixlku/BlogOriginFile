@@ -22,6 +22,10 @@ DDNS服务选用的是园长给的教程，需要注意的是，DNS服务是有�
 
 于是乎我以试试看的心态上网找了另外一个DDNS脚本，即[DDNS脚本](https://github.com/wherelse/cloudflare-ddns-script/tree/master)，运行后效果良好，能够正确的将本地ipv4地址同步至cloudflare。
 
+DDNS服务器脚本是有问题的，明天需要改一下脚本的内容，然后综合到se.yyhnet.top里面去
+
+最后使用[ddns整合包](https://github.com/NewFuture/DDNS)解决了问题，然后写了一个bash放进crontab里面设置为定时任务。写了一个命令以获得内网ip地址`ifconfig enp1s0 | grep 'inet ' | awk '{print $2}'`解析一下：首先是调出了网卡enp1s0的所有信息，而后选择inet （记得inet后面有个空格）的这一行，awk即选择字段2，就可以得到inet后面的ip地址
+
 ## 未解之谜
 
 我的机器物理内存是8G，但是`free -g`命令之后得到的总空间只有4G，暂时还是不明白原因
@@ -55,9 +59,11 @@ DDNS服务选用的是园长给的教程，需要注意的是，DNS服务是有�
 
 `iperf3 -c ipaddress` 当前机器作为客户端，对特定ip地址进行网速测试
 
+`-p port`指定端口
+
 ## 杂七杂八
 
-脚本文件必须要`chmod +x`将权限调整之后才能进行运行
+脚本文件必须要`chmod +x`将权限调整之后才能进行运行，`chmod 777`也行
 
 登陆的端口已经改成35791了，在ssh后面需要加`-p 35791`
 
@@ -70,6 +76,10 @@ DDNS服务选用的是园长给的教程，需要注意的是，DNS服务是有�
 `ufw allow xxx` 打开端口xxx
 
 `ufw delete allow xxx` 关闭端口xxx
+
+`ufw enable` 防火墙打开
+
+`ufw disable` 防火墙关闭
 
 ## 猫猫
 
@@ -98,3 +108,25 @@ DDNS服务选用的是园长给的教程，需要注意的是，DNS服务是有�
 ## Seafile部署
 
 养猫去了把这茬给忘了，下次再写
+
+使用docker部署Seafile服务器，参考的是官方文档[用Docker部署Seafile](https://cloud.seafile.com/published/seafile-manual-cn/docker/用Docker部署Seafile.md)，因此学习了一些Docker的基本命令。目前已经在服务器上部署了seafile服务，登陆账户和注册账户已经可以跑了，但是暂时还没搭建数据库，存不了东西。
+
+发现不是数据库的问题，使web端的seafile地址没设置好，下图需要设置成自己的URL才能够存放文件![image-20230912173209371](http://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/img/image-20230912173209371.png)
+
+现在的问题是只有http而没有https证书，等会需要问一下园长有没有搭nginx，考虑走nginx
+
+### docker的相关命令
+
+可参考[菜鸟教程](https://www.runoob.com/docker/docker-container-usage.html)
+
+列出本地镜像 `docker images`
+
+列出所有本地镜像的状态 `docker ps -a`
+
+列出xxx的本地镜像 `docker images xxx`
+
+启动已经停止运行的容器 `docker start ContainerID`
+
+停止一个容器 `docker stop ContainerID`
+
+删除一个容器 `docker rm -f ContainerID`

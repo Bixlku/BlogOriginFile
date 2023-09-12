@@ -1604,3 +1604,9 @@ public static void f4() throws ArithmeticException{}
 <img src="http://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/img/image-20230909225418378.png" alt="image-20230909225418378" style="zoom:80%;" />
 
 <img src="http://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/img/image-20230909225459100.png" alt="image-20230909225459100" style="zoom:80%;" />
+
+### throw和throws的区别
+
+#### 一览表
+
+![image-20230910163535454](http://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/img/image-20230910163535454.png)
