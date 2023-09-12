@@ -115,3 +115,7 @@ DDNS服务选用的是园长给的教程，需要注意的是，DNS服务是有�
 
 删除一个容器 `docker rm -f ContainerID`
 
+### MySQL
+
+MySQL挺难的。。。还得认真学一学
+
