@@ -531,7 +531,7 @@ super代表父类的引用，用于访问父类的属性、方法、构造器
      ```
    
    - 特点：
-     - 编译类型看左边，运行类型看右边。
+     - **编译类型**看左边，**运行类型**看右边。
      
      - 可以调用父类中的所有成员（遵循访问权限（也就是public，private这种））
      
@@ -556,6 +556,15 @@ super代表父类的引用，用于访问父类的属性、方法、构造器
    
    - 当向下转型后，可以调用子类类型中所有的成员
 
+   <img src="http://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/img/image-20230913210624732.png" alt="向上转型和向下转型的示意图" style="zoom:80%;" />
+   
+   需要注意的是：图中指向方向是从 **对象** 指向其对应的 **引用**
+   
+   ```java
+   Object o = string; //此处为一个向上转型。解释为对一个string对象赋予Object，父类的引用指向了子类的对象。
+   String s = (String) o;//此处为一个向下转型
+   ```
+   
 4. 属性没有重写之说，属性的值看**编译类型**，编译器通过编译类型去寻找属性（成员变量）。而方法则是通过**运行类型**，然后根据相应的**继承顺序**来访问（前面写过这个顺序）。
 
 5. `instanceOf` 比较操作符，用于判断对象的**运行类型**是否为XX类型或XX类型的子类型
@@ -1517,11 +1526,11 @@ Java语言中，将程序中出现的不正常情况称为异常 。
 
 ### 异常事件分类
 
-1. Error（错误）：Java虚拟机无法解决的严重问题
+1. **Error**（错误）：Java虚拟机无法解决的严重问题
 
-2. Exception：其他因编程错误或偶然的外在因素导致的一般性问题，可以使用针对性的代码进行处理。Exception也分为两个大类
-   1. 运行时异常RuntimeException（运行时发生的异常）有默认处理机制
-   2. 编译时异常（编译时，编译器检查出的异常）
+2. **Exception**（异常）：其他因编程错误或偶然的外在因素导致的一般性问题，可以使用针对性的代码进行处理。Exception也分为两个大类
+   1. **运行时异常**RuntimeException（运行时发生的异常）有默认处理机制
+   2. **编译时异常**（编译时，编译器检查出的异常）
 
 ### 🚩异常体系图
 
@@ -1533,7 +1542,7 @@ Java语言中，将程序中出现的不正常情况称为异常 。
 
 ### 异常处理
 
-1. try-catch-finally
+1. **try-catch-finally**
 
    程序员在代码中捕获发生的异常，自行处理
 
@@ -1550,7 +1559,7 @@ Java语言中，将程序中出现的不正常情况称为异常 。
    }
    ```
 
-2. throws
+2. **throws**
 
    将发生的异常抛出，交给调用者（方法）来处理，最顶级的处理者就是JVM
 
@@ -1558,7 +1567,7 @@ try-catch-finally和throws二选一，若未写明，则默认使用throws
 
 #### try-catch-finally
 
-可以有多个catch语句，捕获不同的异常（进行不同的业务处理），要求父类异常在后，子类异常在前，例如：Exception在后，NullPionterException在前。如果发生异常，只会匹配其中的一个catch
+可以有多个catch语句，捕获不同的异常（进行不同的业务处理），要求**父类异常在后，子类异常在前**，例如：Exception在后，NullPionterException在前。如果发生异常，只会匹配其中的一个catch
 
 try-finally可以配合使用，这种用法相当于没有捕获异常，因此程序会直接崩掉。应用场景：执行一段代码，不管是否发生异常，都必须执行某个业务逻辑
 
@@ -1599,7 +1608,7 @@ public static void f4() throws ArithmeticException{}
 #### 细节
 
 1. 自定义异常一般都是继承RuntimException
-2. 把自定义异常做成运行时异常，可以使用默认的处理机制
+2. 把自定义异常做成RuntimeException（运行时异常），可以使用默认的处理机制
 
 <img src="http://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/img/image-20230909225418378.png" alt="image-20230909225418378" style="zoom:80%;" />
 
@@ -1610,3 +1619,23 @@ public static void f4() throws ArithmeticException{}
 #### 一览表
 
 ![image-20230910163535454](http://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/img/image-20230910163535454.png)
+
+## 第13章 常用类
+
+### 包装类 Wrapper
+
+1. 针对八种基本数据类型相应的引用类型——包装类
+
+2. 有了类的特点，就可以调用类中的方法
+
+| 基本数据类型 | 包装类    |
+| ------------ | --------- |
+| boolean      | Boolean   |
+| char         | Character |
+| byte         | Byte      |
+| short        | Short     |
+| int          | Integer   |
+| long         | Long      |
+| float        | Float     |
+| double       | Double    |
+
