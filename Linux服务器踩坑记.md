@@ -1,6 +1,6 @@
 ---
 title: Linux服务器踩坑记
-date: 2023-09-10 10:45:00
+date: 2023-09-13 11:15:00
 tags: 折腾
 ---
 
@@ -130,3 +130,139 @@ DDNS服务器脚本是有问题的，明天需要改一下脚本的内容，然�
 停止一个容器 `docker stop ContainerID`
 
 删除一个容器 `docker rm -f ContainerID`
+
+## Nginx
+
+Nginx是一个反向代理服务，我在服务器中的使用是：外部主机域名访问24680端口时，会重定向到本机的80端口，并进行https加密
+
+园长将Nginx安装于`/usr/local/nginx`位置，其中需要注意的是`conf`文件夹和`sbin`文件夹，`conf`文件夹中的`nginx.conf`是nginx的配置文件，`sbin`文件夹中的`nginx`是nginx程序的执行文件
+
+### 普通反向代理
+
+具体教程可以看[程序员自由之路](https://www.cnblogs.com/54chensongxia/p/12938929.html)，常用功能简单说明一下
+
+nginx.conf文件分为三个部分：全局块、event块、http块
+
+例子：
+
+```shell
+#全局块
+#user  nobody;
+worker_processes  1;
+
+#event块
+events {
+    worker_connections  1024;
+}
+
+#http块
+http {
+    #http全局块
+    keepalive_timeout  65;
+    #server块
+    server {
+        #server全局块
+        listen       8000;
+        server_name  localhost;
+        #location块
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+    }
+    #这边可以有多个server块
+    server {
+      ...
+    }
+}
+
+```
+
+做反向代理需要考虑的是http块，http块由http全局块和server块构成，重要的是server块
+
+一个最简单的无加密的反向代理server块如下。
+
+```bash
+server{
+	listen listen_port;#监听端口
+	server_name xxx.xxx.xxx;#域名，没有域名的话也可以不写
+	
+	location /{
+		proxy_pass http://127.0.0.1:proxied_port;#被反向代理的端口服务
+	}
+}
+```
+
+### HTTPS加密
+
+https加密我这里使用的是certbot，参考的是[Cerbot教程](https://kuokuo.io/2019/08/05/get-lets-encrypt-cert/)。Certbot是Let's Encrypt的官方推荐证书申请工具
+
+```bash
+sudo apt update && sudo apt install certbot#安装Certbot
+```
+
+```bash
+sudo certbot -h #看输出，以确定Certbot已经安装完毕
+```
+
+关闭80端口和443端口的程序
+
+``` bash
+lsof -i:port#查看端口号占用情况，然后kill或者用其他方法关闭
+```
+
+无静态目录的做法：
+
+```bash
+sudo certbot certonly --standalone -d example1.com -d example2.com
+```
+
+有静态目录的做法：
+
+```bash
+sudo certbot certonly --webroot -w /var/www/example -d example.com -d www.example.com
+```
+
+此时会要求输入邮箱，运行结束后需要记下证书的存放位置，例如
+
+![image-20230913114416105](https://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/image-20230913114416105.png)
+
+接下来进入nginx.conf文件进行配置
+
+```bash
+server {
+        server_name example.com www.example.com;
+        listen 443 ssl;#设置为ssl
+        # ssl on; ssl on这个方法已经被废弃，现在只需要在listen后面加ssl即可
+        ssl_certificate 路径/fullchain.pem;
+        ssl_certificate_key 路径/privkey.pem;
+
+        location / {
+           proxy_pass http://127.0.0.1:proxied_port;
+        }
+    }
+```
+
+退出保存，进入nginx的sbin文件夹，然后重启nginx
+
+```bash
+sudo ./nginx -t#查看测试代码，如果successful就可以重启
+sudo ./nginx -s reload
+```
+
+### 命令
+
+nginx命令也就那么几条
+
+```bash
+nginx -t #测试nginx.conf文件是否可用
+nginx -s reload #重新载入配置文件并运行
+nginx -s stop #快速停止nginx
+nginx -s quit #停止nginx（推荐）
+nginx -v #查看nginx版本
+```
+
