@@ -190,6 +190,7 @@ http {
 server{
 	listen listen_port;#监听端口
 	server_name xxx.xxx.xxx;#域名，没有域名的话也可以不写
+	client_max_body_size 10000m;#这里极为重要，因为nginx默认是设置最大文件传输大小为1m，如果不改变的话传输的时候就会卡死
 	
 	location /{
 		proxy_pass http://127.0.0.1:proxied_port;#被反向代理的端口服务
@@ -237,10 +238,11 @@ sudo certbot certonly --webroot -w /var/www/example -d example.com -d www.exampl
 server {
         server_name example.com www.example.com;
         listen 443 ssl;#设置为ssl
+        
         # ssl on; ssl on这个方法已经被废弃，现在只需要在listen后面加ssl即可
         ssl_certificate 路径/fullchain.pem;
         ssl_certificate_key 路径/privkey.pem;
-
+		client_max_body_size 10000m;#这里极为重要，因为nginx默认是设置最大文件传输大小为1m，如果不改变的话传输的时候就会卡死
         location / {
            proxy_pass http://127.0.0.1:proxied_port;
         }
