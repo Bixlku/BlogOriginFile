@@ -272,11 +272,11 @@ nginx -v #查看nginx版本
 
 折腾了一下午，终于实现了Windows10在Ubuntu Server下的虚拟化运行，目前配置为双核四线程，CPU性能损失很小，GPU似乎暂时存在兼容性问题，待处理
 
-### 安装过程
+### 参考文献
 
 参考文章：[KVM-Atlas](https://cloud-atlas.readthedocs.io/zh_CN/latest/kvm/install/ubuntu_deploy_kvm.html)、[在 Ubuntu 的 KVM 中安装 Windows 系统](https://zhuanlan.zhihu.com/p/24764017)、[KVM-Qemu-Libvirt三者之间的关系](https://hsinin.github.io/2017/01/16/KVM-Qemu-Libvirt%E4%B8%89%E8%80%85%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB/)、[virsh常用命令](https://www.cnblogs.com/cyleon/p/9816989.html)
 
-#### 准备工作
+### 准备工作
 
 ```bash
 $ egrep -c '(vmx|svm)' /proc/cpuinfo #查看CPU是否支持虚拟化技术，输出0表示不支持
@@ -290,7 +290,7 @@ $ uname -m #检查内核，若x86_64则为64位内核
 $ sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virtinst #我也说为什么安装的时候有red hat的表示，原来此处的virt-install就是red hat提供的
 ```
 
-#### 添加用户组
+### 添加用户组
 
 这一步不知道有什么用，反正加进去就完事了，如果用户权限这块出了问题就去找这个[Ubuntu部署KVM](https://cloud-atlas.readthedocs.io/zh_CN/latest/kvm/install/ubuntu_deploy_kvm.html)
 
@@ -298,7 +298,7 @@ $ sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils v
 sudo adduser `id -un` libvirt
 ```
 
-#### 创建Windows虚拟机
+### 创建Windows虚拟机
 
 大坑要来了
 
@@ -334,7 +334,7 @@ Creating domain...
 Domain installation still in progress. Waiting for installation to complete.
 ```
 
-#### 远程端口映射到本地
+### 远程端口映射到本地
 
 不知道为什么这些远程桌面软件都要求对远程端口进行本地映射，也就是要求其只能连接127.0.0.1:ports
 
@@ -348,7 +348,61 @@ ssh -C -L local_port:127.0.0.1:remote_port username@server.com
 
 运行后会让输入对应用户的密码，然后ssh登录，往前面翻看是否有报错，没有的话不要关闭这个窗口，到后台最小化即可
 
+### 选用远程桌面
 
+我首先选用的是windows自带的桌面，由于虚拟机使用的是spice协议，而windows自带的远程桌面使用的是RDP协议，所以无法进行连接，后续可以考虑用这个。安装期间使用的是virt-viewer，下载链接是[virt-viewer](https://virt-manager.org/download.html)，windows版本藏在一堆文字里，要仔细找。
+
+virt-viewer这个软件倒是傻瓜式操作，输入
+
+```bash
+spice://127.0.0.1:5900
+```
+
+即可看到安装界面。
+
+<img src="http://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/img/image-20230914224003561.png" alt="image-20230914224003561" style="zoom:80%;" />
+
+### Windows驱动安装
+
+在安装windows之前必须先安装驱动，否则系统无法识别主硬盘。这里如果之前的virtio.iso文件安装正确的话，可以很顺利地安装驱动。
+
+在windows安装完成后，记得还要去磁盘驱动器安装驱动。
+
+![image-20230914225308072](http://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/img/image-20230914225308072.png)
+
+### KVM虚拟机的命令
+
+KVM使用virsh进行操作
+
+`virsh list ` 显示正在运行的虚拟机
+
+`virsh list --all` 显示所有虚拟机
+
+`virsh strat vmname` 启动vmname虚拟机
+
+`virsh stop vmname` 关闭vmname虚拟机
+
+`virsh destroy vmname` 给vmname强制断电
+
+`virsh suspend vmname` 暂停虚拟机
+
+`virsh resume vmname` 恢复挂起的虚拟机
+
+`virsh undefine vmname` 删除vmname虚拟机
+
+`virsh edit vmname` 修改vmname的配置文件
+
+ ### KVM虚拟机配置文件
+
+在虚拟机已经创建后还可以对虚拟机的配置进行修改。配置文件的具体含义参见[KVM虚拟机的xml配置文件](https://blog.51cto.com/sunshyfangtian/679964)
+
+这里的坑是vcpu的值一定要是threads和cores的乘积。
+
+<img src="http://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/img/Snipaste_2023-09-14_23-44-51.png" alt="Snipaste_2023-09-14_23-44-51" style="zoom:80%;" />
+
+报错如下：
+
+`error: unsupported configuration: CPU topology doesn't match maximum vcpu count`
 
 
 
