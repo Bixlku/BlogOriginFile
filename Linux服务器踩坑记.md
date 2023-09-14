@@ -268,3 +268,98 @@ nginx -s quit #停止nginx（推荐）
 nginx -v #查看nginx版本
 ```
 
+## 虚拟化
+
+折腾了一下午，终于实现了Windows10在Ubuntu Server下的虚拟化运行，目前配置为双核四线程，CPU性能损失很小，GPU似乎暂时存在兼容性问题，待处理
+
+### 安装过程
+
+参考文章：[KVM-Atlas](https://cloud-atlas.readthedocs.io/zh_CN/latest/kvm/install/ubuntu_deploy_kvm.html)、[在 Ubuntu 的 KVM 中安装 Windows 系统](https://zhuanlan.zhihu.com/p/24764017)、[KVM-Qemu-Libvirt三者之间的关系](https://hsinin.github.io/2017/01/16/KVM-Qemu-Libvirt%E4%B8%89%E8%80%85%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB/)、[virsh常用命令](https://www.cnblogs.com/cyleon/p/9816989.html)
+
+#### 准备工作
+
+```bash
+$ egrep -c '(vmx|svm)' /proc/cpuinfo #查看CPU是否支持虚拟化技术，输出0表示不支持
+$ egrep -c ' lm ' /proc/cpuinfo #大于0则为64位处理器
+$ uname -m #检查内核，若x86_64则为64位内核
+```
+
+#### 安装KVM
+
+```bash
+$ sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virtinst #我也说为什么安装的时候有red hat的表示，原来此处的virt-install就是red hat提供的
+```
+
+#### 添加用户组
+
+这一步不知道有什么用，反正加进去就完事了，如果用户权限这块出了问题就去找这个[Ubuntu部署KVM](https://cloud-atlas.readthedocs.io/zh_CN/latest/kvm/install/ubuntu_deploy_kvm.html)
+
+```bash
+sudo adduser `id -un` libvirt
+```
+
+#### 创建Windows虚拟机
+
+大坑要来了
+
+创建虚拟机配置文件的写法（此处我将virt-install命令写成了一个脚本文件，所以称之为配置文件，实际上与直接输入virt-install命令没有区别）
+
+virtio驱动文件的下载地址[fedora](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/)，建议使用iso文件
+
+qcow2文件和raw文件的区别可以参考[KVM-qcow2和raw格式对比](https://blog.csdn.net/sssssuuuuu666/article/details/106999198)
+
+注意virtio.iso文件必须在--disk中以cdrom格式挂载，这里我折腾了好久才挂上
+
+```bash
+#!/bin/bash
+virt-install \
+  --network bridge=virbr0,model=virtio \ #网络连接方式
+  --name win10 \ 
+  --ram 2048 \ #内存大小，单位为MB
+  --vcpus sockets=1,cores=2,threads=2\ #分配的cpu数量，此处的threads指的是每个核分配的线程数，类似这里cores=2,threads=2，到最后的vpcu就会等于2*2=4 
+  --os-variant=win10 \
+  --disk path=/var/lib/libvirt/images/vir-driver.iso,device=cdrom\ #驱动文件virtIO.iso的挂载。iso文件应当以cdrom方式挂载，且当主硬盘格式为qcow2时，必须在安装前挂载该virtIO-win驱动，否则会导致安装时系统无法识别主硬盘
+  --disk path=/var/lib/libvirt/images/win10.qcow2,format=qcow2,bus=virtio,cache=none,size=40 \ #主硬盘挂载。任意选择一个地方放至该qcow2文件即可，文件系统建议选择qcow2，因为其空间要比raw好很多，size后面指的是主硬盘空间大小，单位为GB。
+  --graphics spice \ #远程桌面连接协议，此处可选vnc和spice，建议选择spice，流畅度好很多，但是选择了spice之后似乎就不能指定端口了
+  --cdrom /var/lib/libvirt/images/win10_ltsc.iso #系统镜像文件，以cdrom的形式挂载
+```
+
+若创建成功，则会有如下显示
+
+<img src="http://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/img/image-20230914180946439.png" alt="image-20230914180946439" style="zoom:80%;" />
+
+```bash
+Starting install...
+Creating domain...
+Domain installation still in progress. Waiting for installation to complete.
+```
+
+#### 远程端口映射到本地
+
+不知道为什么这些远程桌面软件都要求对远程端口进行本地映射，也就是要求其只能连接127.0.0.1:ports
+
+需要注意，此处的远程端口映射到本地指的是在客户端进行操作，即输入shell的是客户端，绝对不是服务器！！！！
+
+```bash
+ssh -C -L local_port:127.0.0.1:remote_port username@server.com
+```
+
+如果使用的是spice协议，则其默认端口为5900，即此处的remote_port为5900
+
+运行后会让输入对应用户的密码，然后ssh登录，往前面翻看是否有报错，没有的话不要关闭这个窗口，到后台最小化即可
+
+
+
+
+
+坑：本地端口映射到远程、创建虚拟机配置文件的写法（virt-install命令的写法、virtIO驱动的下载、virtIO驱动cdrom的挂载、Graphic中spice和vnc的选择、cpu核心数和线程数中线程对应的是总线程数还是每个core的线程数、各种kvm文件系统的区别）、KVM虚拟机的创建、启动、停止、删除、运行时虚拟机配置文件的写法（在虚拟机创建后还可以调整虚拟机的配置、vcpu的限制）、远程桌面的使用（windows自带的远程桌面、tight VNC、virt-manager，spice和vnc协议的选择）
+
+报错：
+
+`error: unsupported configuration: CPU topology doesn't match maximum vcpu count`
+
+
+
+需要理解的：QEMU、KVM、Libvir、virsh关系和区别
+
+仍需学习：虚拟机克隆
