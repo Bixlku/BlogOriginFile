@@ -706,7 +706,7 @@ System.out.println(a)会默认调用a.toString()
 
 [房屋出租示例代码](https://github.com/Bixlku/JavaStudyCode/tree/main/HouseRent)
 
-## 面向对象（高级）
+## 第十章 面向对象（高级）
 
 ### 类变量（静态变量）
 
@@ -1399,7 +1399,7 @@ class Outer02 {
 
 7. 如果外部类和内部类的成员重名时，内部类访问的话，默认遵循**就近原则**，如果想访问外部类的成员，则可以使用（`外部类名.成员`）去访问
 
-## 枚举和注解
+## 第11章 枚举和注解
 
 ### 枚举(enumeration)
 
@@ -1639,3 +1639,223 @@ public static void f4() throws ArithmeticException{}
 | float        | Float     |
 | double       | Double    |
 
+<img src="https://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/image-20230915142938465.png" alt="继承关系" style="zoom: 67%;" />
+
+<img src="https://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/image-20230915143030998.png" alt="继承关系" style="zoom:80%;" />
+
+<img src="https://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/image-20230915143048622.png" alt="继承关系" style="zoom:80%;" />
+
+#### 包装类和基本数据的转换
+
+1. **装箱**：基本类型->包装类型；**拆箱**：包装类型->基本类型
+
+2. jdk5（包括jdk5）以后都是自动装箱和自动拆箱
+
+3. 自动装箱底层调用的是valueOf()方法，例如：Integer.valueOf()
+
+```java
+//手动装箱
+int n1 = 100;
+Integer integer = new Integer(n1);//手动装箱方法1
+Integer integer = Integer.valueOf(n1);//手动装箱方法2
+//手动拆箱
+int i = integer.intValue();
+
+//jdk5后，自动装箱和自动拆箱
+int n2 = 200;
+//自动装箱
+Integer integer2 = n2;//底层是用的是Integer.valueOf(n2)
+//自动拆箱
+int n3 = integer2;//底层是用的是intValue()方法
+```
+
+#### 包装类型和String类型的相互转换
+
+```java
+//包装类(Integer)->String
+Integer i = 12;
+//方式1
+String str = i +"";
+//方式2
+String str1 = i.toString();
+//方式3
+String str2 = String.valueOf(i);
+
+//String->包装类(Integer)
+String str4 = "114514";
+//方式1
+Integer integer1 = Integer.parseInt(str4);//自动装箱
+//方式2
+Integer integer2 = new Integer(str4);//构造器。已经是Deprecated了，官方不建议
+```
+
+#### 常用的方法
+
+```java
+Integer.MIN_VALUE;//返回最小值
+Integer.MAX_VALUE;//返回最大值
+Character.isDigit('a');//判断是不是数字
+Character.isLetter('a');//判断是不是字母
+Character.isUpperCase('a');//判断是不是大写
+Character.isLowerCase('a');//判断是不是小写
+Character.isWhitespace('a');//判断是不是空格
+Character.toUpperCase('a');//转换成大写
+Character.toLowerCase('a');//转换成小写
+```
+
+#### Integer类的范围提示
+
+```java
+Integer n1 = 127;
+Integer n2 = 127;
+System.out.println(n1==n2);//这里输出true
+
+Integer n3 = 128;
+Integer n4 = 128;
+System.out.println(n3==n4);//这里输出false
+//因为Integer类的源码中，-127-127范围内返回的都是int，而范围外返回的都是new的对象
+//只要==的两边有基本数据类型，那么对比的一定是值
+```
+
+### 🚩String
+
+1. String类用于存储字符串，即一组字符序列
+
+2. 字符串的字符使用Unicode字符编码，一个字符（不区分字母还是汉字）占两个字节
+
+3. String类常用构造器
+
+   ```java
+   String s1 = new String;
+   String s2 = new String(String original);
+   String s3 = new String(char[] a);
+   String s4 = new String(char[] a,int startIndex,int count);
+   ```
+
+4. String是final类，**不能**被其他的类**继承**
+
+5. String有属性 private final char value[];用于存放字符串内容
+
+6. 一定要注意：value是一个final类型，不可以修改（final不可修改指的是**不能指向新的地址**，但是**单个字符**的内容是可以变化的）
+
+   ```java
+   String name = "jack";
+   final char[] value = {'a','b','c'};
+   char[] v2 = {'t','o','m'};
+   value[0] = 'H';//此处不报错
+   value = v2;//此处报错
+   ```
+
+7. Serializable：实现了串行化，说明可以在网络中传输
+
+   Comparable：实现了Comparable接口，说明String对象可以比较大小
+
+   ![image-20230916101911861](https://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/image-20230916101911861.png)
+
+#### 创建String对象的两种方式
+
+1. 直接赋值 `String s = "hspedu"`。只要不是new出来的，就都会直接放在方法区里面，不会进堆
+
+   ![image-20230916112013487](https://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/image-20230916112013487.png)
+
+2. 调用构造器 `String s2 = new String("hsp");`
+
+   ![image-20230916112030189](https://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/image-20230916112030189.png)
+
+![image-20230917143702258](https://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/image-20230917143702258.png)
+
+```java
+s.equals(s2);//equals方法比较的是值，所以这里是True
+s == s2;//这里是False，因为s2指向堆，而s指向常量池
+//.intern()方法返回的是常量池的地址
+//It follows that for any two strings s and t, s.intern() == t.intern() is true if and only if s.equals(t) is true.
+s == s2.intern();//此处返回的是True
+s == s.intern();//此处返回的是False
+```
+
+##### 关于`.intern()`方法的小练习：
+
+```java
+public static void main(String[] args) {
+	String str1 = "Runoob";
+	String str2 = new String("Runoob");
+	String str3 = str2.intern();
+    System.out.println(str1 == str2);  // false
+	System.out.println(str1 == str3);  // true
+}
+```
+
+其文字解释为：
+
+以上实例中，str1 是直接赋值的字符串常量，它会被自动添加到字符串池中。str2 是通 过new String() 创建的新字符串对象，它不会自动添加到字符串池中。然后，通过调用 intern() 方法，将 str2 添加到字符串池中，并返回字符串池中的引用，保存在 str3 中。
+
+注意，== 运算符用于比较引用是否相等。在上面的示例中，str1 == str3 返回 true，这是因为它们都引用字符串池中的同一个对象。
+
+其图像解释为：
+
+<img src="https://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/e717021464726c7b4b32792e037889e.png" alt="e717021464726c7b4b32792e037889e" style="zoom:80%;" />
+
+```java
+public class WrapperType02 {
+    public static void main(String[] args) {
+        Person p1 = new Person();
+        p1.name = "test";
+        Person p2 = new Person();
+        p2.name = "test";
+
+        System.out.println(p1.name.equals(p2.name));//True
+        System.out.println(p1.name == p2.name);//True
+        System.out.println(p1.name == "test");//True
+
+        String s1 = new String("test2");
+        String s2 = new String("test2");
+        System.out.println(s1==s2);//False
+        //搞清楚内存分布图
+    }
+}
+```
+
+
+
+#### 字符串特性
+
+1. 编译器会自动进行优化，判断创建的常量池对象，例如`String a = "hello" + "world"`会直接优化成`String a = "helloworld"`。所以只会创建一个对象。
+
+```java
+String a = "hello";
+String b = "abc";
+String c = a + b;//c=a+b这里是有讲究的
+//1. 先创建一个StringBuilder sb = StringBuilder()
+//2. 执行 sb.append("hello");
+//3. sb.append("abc")
+//4. 相当于String c = sb.toString()
+//最后其实是c指向堆中的对象
+String d = "helloabc"
+d == c//返回False，因为c指向的是堆中的对象，而d直接指向池中的对象
+String e = "hello" + "abc"
+e == d//返回True
+```
+
+##### 练习题：画出下图的内存布局图
+
+```java
+public class Test1 {
+    String str = new String("hsp");
+    char[] ch = {'j','a','v','a'};
+    public static void main(String[] args) {
+        Test1 ex = new Test1();  
+        ex.change(ex.str,ex.ch);
+        System.out.println(ex.str+" and ");
+        System.out.println(ex.ch);
+    }
+    
+    public void change(String str,char[] ch){
+        str = "java";
+        ch[0] = 'h';
+    }
+}
+```
+
+<img src="https://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/image-20230918114742030.png" alt="内存布局图" style="zoom:80%;" />
+
+### String类的常用方法
