@@ -1859,3 +1859,94 @@ public class Test1 {
 <img src="https://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/image-20230918114742030.png" alt="内存布局图" style="zoom:80%;" />
 
 ### String类的常用方法
+
+String类是保存字符串常量的。每次更新都需要重新开辟空间，效率较低。因此开发者设计了StringBuilder和StringBuffer来增强String的功能
+* `equals` 区分大小写判断内容是否相等
+* `equalsIgnoreCase` 忽略大小写判断内容是否相等
+* `length` 获取字符的个数
+* `indexOf` 获取字符串中第一次出现的所以你，索引从0开始，如果找不到，就返回-1
+* `lastIndexOf` 获取字符在字符串中最后一次出现的所以你，索引从0开始，如果找不到，就返回-1
+* `substring` 截取指定范围内的子串
+* `trim` 去掉前后空格
+* `charAt` 获取某索引处的字符，注意没有`str[index]`这种形式 
+* `toUpperCase` 变成大写字符
+* `toLowerCase` 变成小写字符
+* `concat` 拼接字符串
+* `replace` 替换字符串中的字符
+* `split` 分割字符串
+* `compareTo` 比较两个字符串的大小（不懂的话建议去看源码）
+
+  1.  返回值为0时，说面两个字符串相等
+  2.  若前者大，则返回正数；若后者大，则返回负数
+* `toCharArray` 转换成字符数组
+* `format` 格式字符串（类c写法）
+
+### StringBuffer类
+![20230919141502](https://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/vscode/20230919141502.png)
+
+1. StringBuffer的直接父类是AbstractBuilder
+2. StringBuffer实现了Serialzable，即StringBuffer的对象可以串行化
+3. 在父类中 AbstractStringBuilder有属性byte[] value，不是final。该value数组存放字符内容，引出存放在堆中。
+   
+   从jdk9开始char[]被改为了byte[]，因为AbstractStringBuilder大部分情况下存放的都是拉丁字母，使用Byte的话一个拉丁字母只需要占据1个字节的容量，所以现在使用非拉丁字母时，使用UTF-16编码，需要使用isLatin1进行区分
+4. StringBuilder类是一个final类，不能被继承
+5. StringBuilder的字符内容存放在byte[] value中，所以更改后不是每次都要变换地址（如果空间不够还是会改变地址的）
+
+### String VS StringBuffer
+1. String保存的是字符串常量，里面的值不能更改，每次String类的更新实际上就是更改地址，效率较低//`private final char value[]`
+2. StringBuffer保存的是字符串变量，里面的值可以更改，每次StringBuffer的更新实际上可以更新内容，不用每次都更新地址，所以效率比较高。//`char[] value` //这个放在堆中
+
+
+### StringBuffer构造器
+1. `StringBuffer()` 构造一个其中不带字符的字符串缓冲区，其初始容量为16个字符。
+2. `StringBuffer(CharSequence seq)` 构造一个字符串缓冲区，它包含与指定的 CharSequence 相同的字符。
+3. `StringBuffer(int capacity)` 构造一个不带字符，但具有指定初始容量的字符串缓冲区。即对char［］大小进行指定
+4. `StringBuffer(String str)` 构造一个字符串缓冲区，并将其内容初始化为指定的字符串内容。其cahr[]大小为str.length()+16
+
+### StringBuffer转换
+String -> StringBuffer
+
+1. 使用构造器
+
+    ```
+    StringBuffer sb = new StringBuffer(str);
+    ```
+
+2. 使用append()方法
+    
+    ```
+    StringBuffer sb = new StringBuffer(); 
+    sb = sb.append(str);
+    ```
+StringBuffer -> String
+
+1. 使用StringBuffer提供的toString方法
+    ```
+   String s = sb.toString()
+   ```
+
+2. 使用构造器
+
+    ```
+    String s1 = new String(sb);
+    ```
+
+### StringBuffer的常用方法
+
+1. `append` 增
+2. `delete(start,end)` 删
+3. `replace(start,end,string)` 改。将start-end区间的内容替换为string
+4. `indexOf` 查
+5. `insert(index,str)` 在index处插入str，原来索引为index的元素自动后移
+6. `length` 获取长度
+
+### StringBuilder类
+1. 可变字符序列，使用与StringBuffer兼容的API ，但是不保证同步（不是线程安全的）。用作StringBuffer的简易替换，用在字符串缓冲区被单线程使用的时候。如果可能建议使用该类，因为其比StringBuffer要快
+2. StringBuilder的主要操作是append和insert方法，可重载这些方法，以接受任意类型的数据
+
+### String、StingBuffer、StringBuilder比较
+1. StringBuilder和StringBuffer非常类似，均代表可变的字符序列，而且方法也一样
+2. String：不可变字符序列，效率低，但是复用率高。如果需要对String进行大量修改，就不要使用String，应当选择StringBuffer和StringBuilder
+3. StringBuffer：可变字符序列、效率较高（增删）、线程安全
+4. StringBuilder：可变字符序列、效率最高、线程不安全
+
