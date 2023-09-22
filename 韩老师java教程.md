@@ -49,7 +49,7 @@ tags: 学习
 
 ## 面向对象
 
-## 面向对象（初级）
+## 第8章 面向对象（初级）
 
 ### 对象内存布局
 
@@ -183,7 +183,7 @@ public T(String name,int age){
              people[0].name="yyh";
      ```
 
-## 面向对象（中级）
+## 第9章 面向对象（中级）
 
 ### IDEA编译器
 
@@ -481,6 +481,10 @@ super代表父类的引用，用于访问父类的属性、方法、构造器
 
 多态：方法或对象具有多种形态，是面向对象的第三大特征，多态是建立在封装和继承基础之上的。
 
+Java有两种引用类型，分别是编译时类型和运行时类型。编译型类型在变量声明时决定，运行时类型取决于变量具体指向的类型，如果两种类型不一致，就会出现多态。
+
+规则：对象调用编译时类型的属性和运行时类型的方法。
+
 #### 具体体现
 
 1. 方法的多态：重载和重写体现多态
@@ -706,7 +710,7 @@ System.out.println(a)会默认调用a.toString()
 
 [房屋出租示例代码](https://github.com/Bixlku/JavaStudyCode/tree/main/HouseRent)
 
-## 第十章 面向对象（高级）
+## 第10章 面向对象（高级）
 
 ### 类变量（静态变量）
 
@@ -1864,8 +1868,8 @@ String类是保存字符串常量的。每次更新都需要重新开辟空间�
 * `equals` 区分大小写判断内容是否相等
 * `equalsIgnoreCase` 忽略大小写判断内容是否相等
 * `length` 获取字符的个数
-* `indexOf` 获取字符串中第一次出现的所以你，索引从0开始，如果找不到，就返回-1
-* `lastIndexOf` 获取字符在字符串中最后一次出现的所以你，索引从0开始，如果找不到，就返回-1
+* `indexOf` 获取字符串中第一次出现的索引，索引从0开始，如果找不到，就返回-1
+* `lastIndexOf` 获取字符在字符串中最后一次出现的索引，索引从0开始，如果找不到，就返回-1
 * `substring` 截取指定范围内的子串
 * `trim` 去掉前后空格
 * `charAt` 获取某索引处的字符，注意没有`str[index]`这种形式 
@@ -1950,3 +1954,40 @@ StringBuffer -> String
 3. StringBuffer：可变字符序列、效率较高（增删）、线程安全
 4. StringBuilder：可变字符序列、效率最高、线程不安全
 
+### Math类
+常用的**静态方法**
+1. `abs()` 求绝对值
+2. `pow()` 求幂
+3. `ceil()` 向上取整
+4. `floor()` 向上取整
+5. `round()` 四舍五入
+6. `sqrt()` 求开方
+7. `random()` 求随机数，返回一个[0,1)的随机小数
+8. `max()` 求两个数的最大值
+9. `min()` 求两个数的最小值
+
+### Arrays类
+1. `Arrays.toString()` 显示数组
+2. `Arrays.sort()` 排序 
+
+    * 因为数组是引用类型，所以通过sort排序后，会直接影响到实参arr。
+
+    * sort是重载的，也可以通过传入一个接口 Comparator 实现定制排序
+    
+    * 定制排序：`Arrays.sort(arr,new Comparator(){})`传入两个参数：
+    
+        （1） 排序的数组arr 
+    
+        （2）实现了Comparator接口的匿名内部类，要求其实现compare方法。其底层调用了**二叉排序**，compare方法返回的int值的正负会直接影响排序是从小到大还是从大到小。如果i1-i2则为从小到大，反之则为从大到小
+
+3. `Arrays.binarySearch()` 通过二分搜索法进行查找，要求数组有序
+
+4. `copyOf` 数组元素的复制 
+    
+    `Integer[] newArr = Arrays.copyOf(arr,arr.length)` 从arr数组中，拷贝arr.length个元素到newArr数组中。如果拷贝的长度大于arr.length，就在新数组后面加null；如果拷贝的长度小于0，就抛出异常NegativeArraySizeException。
+
+5. `Arrays.fill(arr,element)` 数组填充。将所有元素替换为element
+
+6. `Arrays.equals(arr1,arr2)` 比较两个数组的内容是否完全一致
+
+7. `Arrays.asList()` 将一组值，转换为list。
