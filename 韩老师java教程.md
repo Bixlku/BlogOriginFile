@@ -1974,11 +1974,23 @@ StringBuffer -> String
 
     * sort是重载的，也可以通过传入一个接口 Comparator 实现定制排序
     
-    * 定制排序：`Arrays.sort(arr,new Comparator(){})`传入两个参数：
+    * 定制排序：
     
-        （1） 排序的数组arr 
+    ```java
+    Arrays.sort(arr,new Comparator(){
+        @Override
+        public int compare(Object o1, Object o2){
+            相关程序代码
+            return int1-int2;
+        }
+    })
+    ```
     
-        （2）实现了Comparator接口的匿名内部类，要求其实现compare方法。其底层调用了**二叉排序**，compare方法返回的int值的正负会直接影响排序是从小到大还是从大到小。如果i1-i2则为从小到大，反之则为从大到小
+    传入两个参数：
+
+    （1） 排序的数组`arr`
+    
+    （2）实现了Comparator接口的匿名内部类，要求其实现compare方法。其底层调用了**二叉排序**，compare方法返回的int值的正负会直接影响排序是从小到大还是从大到小。如果i1-i2则为从小到大，反之则为从大到小
 
 3. `Arrays.binarySearch()` 通过二分搜索法进行查找，要求数组有序
 
@@ -1991,3 +2003,137 @@ StringBuffer -> String
 6. `Arrays.equals(arr1,arr2)` 比较两个数组的内容是否完全一致
 
 7. `Arrays.asList()` 将一组值，转换为list。
+
+### System类
+
+1. `exit` 退出当前程序
+2. `arraycopy()` 复制数组元素，适合底层调用。一般选用`Arrays.copyOf()`，其底层调用的就是`arraycopy()`
+3. `currentTimeMillens()` 返回当前时间距离1970-1-1的毫秒数
+4. `gc` 运行垃圾回收机制 System.gc()
+
+### BigInteger和BigDecimal类
+
+应用场景：
+
+1. BigInteger适合保存比较大的整型
+
+2. BigDecimal适合保存进度更高的浮点型（小数）
+
+
+对BigInteger或BigDecimal进行加减乘除时，不能直接写运算符号，而应该调用对应的方法
+
+在调用devide方法时，需要指定精度，即BigDecimal.ROUND_CEILING。其精度与分子相同
+
+## 第14章 集合
+
+### 集合的理解和好处
+
+数组：
+1. 长度开始时必须指定，而且一旦指定，不能修改
+2. 保存的必须为同一类型的元素
+3. 使用数组进行增加/删除元素 比较麻烦
+
+集合：
+1. 可以动态保存任意多个对象，使用方便
+2. 提供一系列方便的操作对象的方法：add、remove、set、get
+3. 使用集合添加、删除元素比较间接
+
+### 集合框架体系
+
+必背
+
+#### Collection：单列集合
+![20230924170531](https://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/vscode/20230924170531.png)
+
+#### Map：双列集合
+![20230924170449](https://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/vscode/20230924170449.png)
+
+### Collection接口和常用方法
+
+#### Collection接口实现类的特点
+
+```java
+public interface Collection<E> extends Iterable<E>
+```
+
+1. Collection实现子类可以存放多个元素，每个元素可以是Object
+2. 有些Collection实现类可以存放重复元素，有些不能；有些是有序的（List），有些是无序的（Set）
+3. Collection接口**没有直接**的子类，是通过它的子接口Set和List来实现的
+
+#### 使用ArrayList演示常用方法
+
+1. `add`： 添加单个元素（有自动装箱功能）
+2. `remove`： 删除指定元素
+    `list.remove(int index)`删除序列为index的元素
+    `list.remove(Object o)`删除指定元素的第一个出现。 如果不包含该元素，则不会更改。
+3. `contains`：查找元素是否存在
+4. `size`：获取元素个数
+5. `isEmpty`：判断是否为空
+6. `clear`：清空
+7. `addAll`：添加多个元素
+8. `containsAll`：查找多个元素是否都存在
+9. `removeAll`：删除多个元素
+
+#### Collection接口遍历元素方式
+1. 使用Iterator（迭代器）
+    
+    * Iterator对象称为迭代器，主要用于遍历Collection集合中的元素
+    * 所有实现了Collection接口的集合类都有一个iterator()方法，用以返回一个实现了Iterator()接口的对象，即可以返回一个迭代器
+    * 使用Iterator.next()之前，必须先用hasNext()，否则可能会抛出NoSuchElementException
+    * 如果希望再次遍历，需要重置迭代器
+
+2. 增强for循环
+    
+    增强for循环，可以代替iterator迭代器，特点：增强for就是简化版的iterator，本质一样。只能用于遍历集合或数组。
+
+    基本语法
+    ```java
+    for(元素类型 元素名:集合名或数组名)
+        访问元素
+    ```
+
+    实际上增强for循环底层就是调用了iterator的next()。可以理解为简化版本的迭代器遍历。
+
+    快捷方式：`I`
+
+### List接口
+
+1. List集合类中元素有序（即添加顺序和去除顺序一致）、且可重复
+2. List集合中的每个元素都有其对应的顺序索引，即支持索引
+3. List容器中的元素都对应一个整数型的序号记载其在容器中的位置，可以根据序号存取容器中的元素
+4. 实现List接口的实现类有很多，常见的有ArrayList、LinkedList和Vector
+
+#### 常用方法
+
+1. `void add(int index, Object ele)` 在index位置插入ele元素
+
+2. `boolean addAll(int index, Collection eles)` 从index位置开始将eles中的所有元素都添加进来
+
+3. `Object get(int index)` 获取指定index位置的元素
+
+4. `int indexOf(Object obj)` 返回obj在集合中首次出现的位置
+
+5. `int lastIndexOf(Object obj)` 返回obj在当前集合中末次出现的位置
+
+6. `Object remove(int index)` 移除指定index位置的元素，并返回此元素
+
+7. `Object set(int index, Object ele)` 设置指定index位置的元素为ele，相当于是替换
+
+8. `List subList(int fromIndex, int toIndex)` 返回从fromIndex到toIndex位置的子集
+
+### ArrayList的注意事项
+
+1. permits all elements, including null, ArrayList 可以加入null，并且支持加入多个null
+
+2. ArrayList底层是基于数组实现的
+
+3. ArrayList基本等同于Vector，但是ArrayList是线程不安全的；在多线程情况下不建议使用ArrayList
+
+### ArrayList底层结构和源码分析
+
+1. ArrayList中维护了一个Object[]类型的数组elementData。transient Object[] elementData; transient 短暂的、瞬间；表示该属性不会被序列化
+
+2. 创建ArrayList对象时，如果使用无参构造器，则初始化elementData容量为0，第一次添加，则扩容elementData为10，如需要再次扩容，则扩容elementData为1.5倍大小
+
+3. 如果使用的是指定大小的构造器，则初始elementData容量为指定大小，如果需要扩容，则直接扩容elementData为1.5倍
+
