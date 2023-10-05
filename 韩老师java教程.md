@@ -2137,3 +2137,37 @@ public interface Collection<E> extends Iterable<E>
 
 3. 如果使用的是指定大小的构造器，则初始elementData容量为指定大小，如果需要扩容，则直接扩容elementData为1.5倍
 
+### ArrayList和LinkedList的比较
+
+![20230926191930](https://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/vscode/20230926191930.png)
+
+一般来说，在程序中，80%-90%是改查，所以大部分情况下使用的是ArrayList
+
+### Set接口和常用方法
+
+#### Set接口基本介绍
+
+1. 无序（添加和取出的顺序不一样），虽然无序，但是**固定顺序**没有索引
+2. 不允许重复元素，所以最多包含一个null
+3. JDK API中Set接口的实现类
+
+#### Set接口常用方法
+
+和List接口一样，Set接口是Collection的子接口，所以常用方法和Collection接口一样
+
+#### Set接口的遍历方式
+
+和Collection遍历方式一致
+
+1. 使用迭代器
+2. 增强for
+3. **不能**使用索引的方式
+
+### HashSet的全面说明
+
+1. HashSet实现了Set接口
+2. HashSet底层实际上是HashMap
+3. 可以存放null值，但是只能有一个null
+4. HashSet不保证元素是有序的，取决于hash后，再确定索引的结果。即不保证取出和存入顺序一致
+5. 不能有重复元素/对象
+   
