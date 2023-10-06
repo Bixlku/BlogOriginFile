@@ -238,7 +238,7 @@ sudo certbot certonly --webroot -w /var/www/example -d example.com -d www.exampl
 server {
         server_name example.com www.example.com;
         listen 443 ssl;#设置为ssl
-        
+        listen [::]:443 ssl;#注意，nginx默认的方式是只监听ipv4的端口，如果想监听ipv6的端口那必须以这种方式[::]:port写出来
         # ssl on; ssl on这个方法已经被废弃，现在只需要在listen后面加ssl即可
         ssl_certificate 路径/fullchain.pem;
         ssl_certificate_key 路径/privkey.pem;
@@ -268,7 +268,7 @@ nginx -s quit #停止nginx（推荐）
 nginx -v #查看nginx版本
 ```
 
-## 虚拟化
+## 虚拟化（现在已经在用PVE了）
 
 折腾了一下午，终于实现了Windows10在Ubuntu Server下的虚拟化运行，目前配置为双核四线程，CPU性能损失很小，GPU似乎暂时存在兼容性问题，待处理
 
@@ -417,3 +417,14 @@ KVM使用virsh进行操作
 需要理解的：QEMU、KVM、Libvir、virsh关系和区别
 
 仍需学习：虚拟机克隆
+
+## 北交校园网
+
+登录
+```bash
+curl 'http://10.10.43.3' --data "DDDDD=student_id&upass=password&0MKKey="
+```
+登出
+```bash
+curl 'http://10.10.43.3/F.htm'
+```
