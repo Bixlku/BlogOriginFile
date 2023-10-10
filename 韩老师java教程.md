@@ -2170,4 +2170,117 @@ public interface Collection<E> extends Iterable<E>
 3. 可以存放null值，但是只能有一个null
 4. HashSet不保证元素是有序的，取决于hash后，再确定索引的结果。即不保证取出和存入顺序一致
 5. 不能有重复元素/对象
+
+
+示例代码：
+```java
+public class Main {
+    public static void main(String[] args) {
+        Emploee yyh = new Emploee("yyh", "1");
+        Emploee yyh1 = new Emploee("yyh", "1");
+        HashSet a = new HashSet();
+        System.out.println(a.add(yyh));//返回true
+        System.out.println(a.add(yyh1));//此处会返回false，因为hashcode和equals返回的值都是一样的
+    }
+}
+
+class Emploee {
+    private String name;
+    private String age;
+
+    public Emploee(String name, String age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    @Override
+    public boolean equals(Object o) {//重写equals接口
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Emploee emploee = (Emploee) o;
+        return Objects.equals(name, emploee.name) && Objects.equals(age, emploee.age);
+    }
+
+    @Override
+    public int hashCode() {//重写每一个Object类都有的hashCode接口
+        return Objects.hash(name, age);
+    }
+}
+```
+
    
+### Map接口和常用方法
+1. Map和Collection并列存在。用于保存具有映射关系的数据：Key-Value，即键值对
+2. Map中的Key和value可以是任何引用类型的数据，会封装到HashMap$Node对象中
+3. Map中的Key不允许重复，原因和HashSet一样，当`put()`的Key重复时，等价于替换
+4. Map中的value可以重复
+5. Map中的key可以为null，value也可以为null，注意key为null只能有一个，而value为null可以有多个
+6. **常用**String类作为Map的key
+7. key和value之间存在单向一对一关系，即通过指定的key总能找到对应的value
+8. Map存放数据的key-value示意图，一对k-v是放在一个HashMap$Node中的，又因为Node实现了Entry接口，有些书上也说一对k-v就是一个Entry
+```java
+Map map = new HashMap();
+map.put("no1","yyh");
+map.put("no2","yyh2");
+
+Set set = map.entrySet();
+System.out.println(set.getClass());
+
+//static class Node<K,V> implements Map.Entry<K,V>
+//k-v存放于HashMap$Node中，其代码格式为HashMap$Node node = newNode(hash,key,value,null)
+//entrySet集合的存在是为了方便程序员进行遍历，该集合存放的元素类型是Entry，一个Entry对象有k和v，即EntrySet<Entry<K,V>>
+//entrySet中存放的是Entry，但是其实际上存放的是HashMap$Node。因为HashMap$Node实现了Entry接口，static class Node<K,V> implements Map.Entry<K,V>
+//实际上Entry中的k和v都是指向Node的。只是指向！
+
+for(Object obj : set){
+    System.out.println(obj.getClass());//输出class java.util.HashMap$Node
+}
+```
+
+### Map接口和常用方法
+
+1. `put` 添加
+2. `remove` 根据键删除映射关系
+3. `get` 根据键获取值
+4. `size` 获取元素个数
+5. `isEmpty` 判断各户是否为0
+6. `clear` 清除
+7. `containsKey` 查找键是否存在
+
+#### Map接口的遍历方法
+1. `containsKey` 查找键是否存在
+2. `keySet` 获取所有的键
+3. `entrySet` 获取所有关系
+4. `values` 获取所有的值
+   
+第一组：先取出所有的key，通过key取出对应的Value
+```java
+Set keyset = map.keySet();
+//(1)增强for循环
+for(Object key : keyset){
+    System.out.println(key + "-" +map.get(key));
+}
+//(2)迭代器
+Iterator iterator keyset.iterator();
+while(iterator.hasNext()){//快捷键itit
+    Object next = iterator.next()
+}
+```
+第二组：把所有的values取出来
+```java
+Collection values = map.values();
+//这里可以使用所有的Collections使用的遍历方法
+//(1)增强for循环
+for(Object value : values){
+    System.out.println(value);
+}
+//(2)迭代器
+Iterator iterator = values.iterator();
+while(iterator.hasNext()){//快捷键itit
+    Object next = iterator.next()
+}
+```
+第三组：通过EntrySet来获取k-v
+```java
+
+```
