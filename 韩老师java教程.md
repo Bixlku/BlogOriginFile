@@ -2282,5 +2282,111 @@ while(iterator.hasNext()){//快捷键itit
 ```
 第三组：通过EntrySet来获取k-v
 ```java
+//(1)增强for循环
+for(Object entry : entrySet) {
+    Map.Entry m = (Map.Entry) entry;
+    System.out.println(m.getKey() + "-" + m.getValue());
+}
+//(2)迭代器
+Iterator iterator = entrySet.iterator();
+while(iterator.hasNext()){
+    Object next = iterator.next();//HashMap$Node -实现-> Map.Entry(getKey,getValue)，HashMapNode没提供相应的方法。。。
+    Map.Entry m = (Map.Entry) entry;
+    System.out.println(m.getKey() + "-" + m.getValue());
+}
+```
 
+## 反射
+Java的反射是指程序在运行期可以得到一个对象的所有信息
+![20231012161513](https://yyh-blogimage.oss-cn-shanghai.aliyuncs.com/vscode/20231012161513.png)
+
+1. Class也是类，因此也继承Object类 ［类图］
+2. Class类对象不是new出来的，而是**系统创建**的［演示］
+3. 对于某个类的Class类对象，在内存中只有一份，因为类**只加载一次** ［演示］
+4. 对于每个类的实例都会记得自己是由哪个Class实例所生成的
+5. 通过Class对象可以完整地得到一个类的**完整结构**，通过一系列API
+6. Class对象是存放在**堆**的
+7. 类的字节码二进制数据，是放在**方法区**的，有的地方称为类的元数据（包括 方法代码变量名，方法名，访问权限等等）
+
+### Class类常用方法
+包中的Animal.java文件，其中包含了一个Animal Class，文件位置在com.yyh.class_
+```java
+package com.yyh.class_;
+
+public class Animal {
+    public String name = "cat";
+    public int age = 10;
+    public String home = "Asia";
+
+    @Override
+    public String toString() {
+        return "Animal{" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                ", home='" + home + '\'' +
+                '}';
+    }
+}
+```
+Class类常用方法如下
+```java
+String classAllPath = "com.yyh.class_.Animal";
+//1. 获取到Animal类 对应的 Class对象
+//<?>表示不确定的Java类型
+Class<?> cls = Class.forName(classAllPath);
+//2. 输出cls
+System.out.println(cls);//显示cls的对象，是哪个Class对象 class com.yyh.class_.Animal
+System.out.println(cls.getClass());//输出cls的运行类型 class java.lang.Class
+//3. 得到包名
+System.out.println(cls.getPackage().getName());
+//4. 得到全类名
+System.out.println(cls.getName());
+//5. 通过clas创建对象实例
+Animal cat = (Animal)cls.newInstance();
+System.out.println(cat);
+//6. 通过反射获取属性name
+Field name = cls.getField("name");
+//如果name这里是私有属性或者default属性都会报错NoSuchFileException
+System.out.println(name.get(cat));
+//7. 通过反射给属性赋值
+name.set(cat,"HelloKitty");
+System.out.println(name.get(cat));//输出HelloKitty
+//8. 遍历得到所有的字段属性
+Field[] fields = cls.getFields();
+for(Field f : fields){
+    System.out.println(f.getName());//此处只输出public属性
+    /*输出:
+    name
+    age
+    home*/
+```
+
+### 获取Class对象的六种方法
+```java
+//1. Class.forName
+        String classAllPath = "com.yyh.class_.Animal";
+        Class<?> cls1 = Class.forName(classAllPath);
+        //2. 类名.class，应用场景：参数传递
+        Class cls2 = Animal.class;
+        System.out.println(cls2);
+        //3. 对象.getClass()，应用场景：有对象实例
+        //反映了 反射 的本质，即程序在运行期可以得到一个对象的所有信息，这个信息里面就包括了对象对应的类的信息
+        Animal cat = new Animal();
+        Class<? extends Animal> cls3 = cat.getClass();
+        System.out.println(cls3);
+        //4. 通过类加载器来获取到类的Class对象
+        //(1)先得到类加载器 car
+        ClassLoader classLoader = cat.getClass().getClassLoader();
+        //(2)通过类加载器得到Class对象
+        Class cls4 = classLoader.loadClass(classAllPath);
+        System.out.println(cls4);
+        //cls1,cls2,cls3,cls4其实是同一个对象
+        //5. 基本数据类型（int,char,bytr,long......）按如下方式得到Class类对象
+        Class<Integer> integerClass = int.class;
+        System.out.println(integerClass);//int
+        //6. 基本数据类型对应的包装类，可以通过.TYPE得到Class类对象
+        Class type = Integer.TYPE;
+        System.out.println(type);//int
+
+        //integerClass和type实际上也是同样的类，底层会进行自动装箱和自动拆箱
 ```
